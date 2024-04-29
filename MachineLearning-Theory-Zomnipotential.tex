@@ -1,0 +1,276 @@
+\documentclass[10pt]{article}
+
+% For text sizes
+\usepackage[left=1in,right=1in,top=0.8in,bottom=0.9in]{geometry}
+
+% For figures
+\usepackage{graphicx}
+\usepackage{tikz}
+
+% For vertical space between items
+\usepackage{enumitem}
+
+% Used to show Python code 'verbatim'
+\usepackage{listings}
+\usepackage{xcolor}
+\definecolor{keywords}{RGB}{255,0,90}
+\definecolor{comments}{RGB}{0,0,113}
+\definecolor{red}{RGB}{160,0,0}
+\definecolor{green}{RGB}{0,150,0}
+
+% For href
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=red,
+    citecolor=green,
+    urlbordercolor={0 0 1},
+}
+
+% for confusion matrix
+\usepackage{array}
+\usepackage{multirow}
+
+\newcommand\MyBox[2]{
+  \fbox{\lower0.75cm
+    \vbox to 1.7cm{\vfil
+      \hbox to 1.7cm{\hfil\parbox{1.4cm}{#1\\#2}\hfil}
+      \vfil}%
+  }%
+}
+
+\begin{document}
+
+% Used to show Python code 'verbatim'
+\lstset{language=Python, 
+        basicstyle=\ttfamily\footnotesize, 
+        keywordstyle=\color{keywords},
+        commentstyle=\color{green},
+        stringstyle=\color{red},
+        showstringspaces=false,
+        identifierstyle=\color{comments},
+        keywords=[2]{pow},
+        keywordstyle=[2]{\color{orange}},
+}
+% Python code illustration ends here
+
+\title{Databas från CSV-fil\footnote{\footnotesize{\href{https://github.com/Zomnipotential/Power\_BI\_Quiz_I}{https://github.com/Zomnipotential/Power\_BI\_Quiz\_I}}}}
+\author{Matthew H. Motallebipour}
+\date{\today}
+\maketitle
+
+\section{Teoretiska frågor}
+
+\subsection{Träning, validering, test}
+
+Träning används för att skapa en estimator, validering används frekvent för att testa resultatet av funktionsuppskattningen som delmål. Test-data används däremot efter att en slutlig estimator är färdigställt och redo att "deploy"as.
+
+\subsection{Jämförelse av modeller}
+
+Om hon inte kan använda funktionen för uppdelning av data i träning, validering och test kan hon kanske använda funktioner som finns för korsvalidering av data, om inte även det är förbjudet att använda. Dessa funktioner delar upp data i flera del mängder under körning, där varje delmängd används som valideringsdata i varje runda och de andra delar används till träning av modellen. Efter att alla delmängder är använda beräknar prestandan för den producerade modellen som möjliggör jämförelse mellan de nämnda funktionerna.
+
+\subsection{Regression}
+
+Regressionsproblem handlar om att hitta en funktion/ hyperplan som kan approximera majoriteten av punkter i en datamängd i ett N-dimensionellt rum.  Värden som fås från funktionen är ofta reella. Exempel på modeller som genererar sådana funktioner:
+\begin{itemize}
+	\item Linjär regression: ofta används det inom ekonomi och medicin, där sambandet mellan två fenomen betraktas.
+	\item Polynomial regression: också används inom ekonomi, där man baserad på flera faktorer bestämmer om företag kommer att vara lönsamt året därpå; se kursboken sidan 36.
+	\item Beslutsträd: används många gånger där en beroende faktor är bestäms av flera andra faktorer. Trots att den genererade hyperplanen är "fyrkantig" används det ändå ofta för det ändamålet.
+	\item Random Forest: använder sig av flera beslutsträd och klassificeras därför som en ensemble-metod.
+\end{itemize}
+
+\subsection{RMSE}
+
+RMSE är enkelt sagt ett medelvärde för avståndet mellan riktiga värden och deras uppskattningar som är framställd mha en datormodell. Nogrannare är detta värde beräknat genom roten (R) ur medelvärdet (M) av summan (S) av alla data punkters avvikelser från den uppskattade hyperplanen (E) i kvadrat.
+
+\subsection{Klassificering}
+
+Klassificeringsproblem är där man önskar konstruera modeller som delar datapunkter i olika grupper eller kategorier baserat på deras olika egenskaper. Klassificering, tvärtemot regressionsproblem, framställer oftast diskreta resultat, även om de genererade talen kan vara reellvärda. Skillnaden mot regression är att i regression är själva den predikterade hyperplanen en uppskattning av datapunkterna medan i klassificering är hyperplanen en uppskattning av gränsen mellan datapunkterna i de olika kategorierna.
+
+Dessa använda t ex för för olika igenkänningsproblem, såsom igenkänning av handskrivna bokstäver, klassificering av växter och djur osv. Exempel på modeller som löser sådana problem är
+
+\begin{itemize}
+	\item Logistisk regression: i sin enklaste, typiska form används den för binär klassificering
+	\item Olika typer av neurala nätverk, såsom faltningsneuronnät (CNN),
+	\item Random Forest Classifier
+	\item Support Vector Classifier
+\end{itemize}
+
+Confusion matrix bygger på relationen mellan antalet riktiga datapunkter och deras uppskattningar. Raderna fördelas mellan negativa och positiva riktiga datapunkter och kolumnerna fördelas mellan negativa och positiva uppskattningar av samma datapunkter. Resultatet ser ut som följer:
+
+\noindent
+\renewcommand\arraystretch{1.5}
+\setlength\tabcolsep{0pt}
+\begin{tabular}{c >{\bfseries}r @{\hspace{0.7em}}c @{\hspace{0.4em}}c @{\hspace{0.7em}}l}
+  \multirow{10}{*}{\parbox{1.1cm}{\bfseries\raggedleft actual\\ value}} & 
+    & \multicolumn{2}{c}{\bfseries Prediction outcome} & \\
+  & & \bfseries p & \bfseries n & \bfseries total \\
+  & p$'$ & \MyBox{True}{Positive} & \MyBox{False}{Negative} & P$'$ \\[2.4em]
+  & n$'$ & \MyBox{False}{Positive} & \MyBox{True}{Negative} & N$'$ \\
+  & total & P & N &
+\end{tabular}
+
+\subsection{K-means}
+
+K-means är en modell för klassificering av data utan tillgång till labels, en så kallad oövervakad inlärningsalgoritm. Till exempel gruppering av kunder baserad på deras intressen eller inhandlade varor.
+
+\subsection{Data Encoding}
+
+När det finns features/ kolumner som innehåller kategorisk data kan de inte användas i ML-modeller. Därför måste de omformas, dvs ersättas av siffror. Detta kallar vi kodning. Det finns tre typer av kodning.
+
+\subsubsection{Ordinal kodning} Görs när man inser att data har en inbördes rangordning. Denna rangordning representerar vi med siffror. T.ex. kan barn, tonårig, ung, mellanålder och gammal ersättas av siffrorna 1, 2, 3, 4 och 5. Detta kräver endast en kolumn att ersätta den ordinarie kolumnen.
+
+	\begin{tabular}{l@{\hspace{10pt}}c}
+	ung			&	3	\\[-7pt]
+	gammal		&	5	\\[-7pt]
+	barn			&	1	\\[-7pt]
+	barn			&	1	\\[-7pt]
+	barn			&	1	\\[-7pt]
+	mellanålder	&	4	\\[-7pt]
+	barn			&	1	\\[-7pt]
+	mellanålder	&	4	\\[-7pt]
+	gammal		&	5	\\[-7pt]
+	gammal		&	5	\\[-7pt]
+	barn			&	1	\\[-7pt]
+	ung			&	3	\\[-7pt]
+	barn			&	1	\\[-7pt]
+	gammal		&	5	
+	\end{tabular}
+
+\subsubsection{I one-hot encoding} får vi lägga till en extra kolumn i tabellen för varje distinkt värde i den ordinarie kolumnen. I dessa nya kolumner markerar 1 att respektive kategori finns på den raden i den ordinarie kolumnen. Så vårt tidigare exempel får ett nytt utseende
+
+	\begin{tabular}{l@{\hspace{10pt}}c@{\hspace{10pt}}c@{\hspace{10pt}}c@{\hspace{10pt}}c@{\hspace{10pt}}c}
+				&	barn	&	tonåring	&	ungdom	&	mellanålder	&	gammal	\\[-7pt]	
+	ung			&	0	&	0	&	1	&	0	&	0	\\[-7pt]
+	gammal		&	0	&	0	&	0	&	0	&	1	\\[-7pt]
+	barn			&	1	&	0	&	0	&	0	&	0	\\[-7pt]
+	tonåring		&	1	&	1	&	0	&	0	&	0	\\[-7pt]
+	barn			&	1	&	0	&	0	&	0	&	0	\\[-7pt]
+	mellanålder	&	0	&	0	&	0	&	1	&	0	\\[-7pt]
+	barn			&	1	&	0	&	0	&	0	&	0	\\[-7pt]
+	mellanålder	&	0	&	0	&	0	&	1	&	0	\\[-7pt]
+	gammal		&	0	&	0	&	0	&	0	&	1	\\[-7pt]
+	gammal		&	0	&	0	&	0	&	0	&	1	\\[-7pt]
+	barn			&	1	&	0	&	0	&	0	&	0	\\[-7pt]
+	ung			&	0	&	0	&	1	&	0	&	0	\\[-7pt]
+	barn			&	1	&	0	&	0	&	0	&	0	\\[-7pt]
+	gammal		&	0	&	0	&	0	&	0	&	1
+	\end{tabular}
+	
+\subsubsection{Dummy kodning} Utförs med dummy variabler och sparar en kolumn genom att ta bort det självklara alternativet att där alla andra kolumner innehåller nollor ska det antas att den ordinarie kolumnen antar det alternativ för vilket det inte finns någon kolumn. I den tabell som följer tar vi bort barn-kolumnen och märker att vi ändå kan se var värdet i den ordinarie kolumnen ska vara 1 (barn).
+
+	\begin{tabular}{l@{\hspace{10pt}}c@{\hspace{10pt}}c@{\hspace{10pt}}c@{\hspace{10pt}}c@{\hspace{10pt}}c}
+				&	tonåring	&	ungdom	&	mellanålder	&	gammal	\\[-7pt]	
+	ung			&	0	&	1	&	0	&	0	\\[-7pt]
+	gammal		&	0	&	0	&	0	&	1	\\[-7pt]
+	barn			&	0	&	0	&	0	&	0	\\[-7pt]
+	tonåring		&	1	&	0	&	0	&	0	\\[-7pt]
+	barn			&	0	&	0	&	0	&	0	\\[-7pt]
+	mellanålder	&	0	&	0	&	1	&	0	\\[-7pt]
+	barn			&	0	&	0	&	0	&	0	\\[-7pt]
+	mellanålder	&	0	&	0	&	1	&	0	\\[-7pt]
+	gammal		&	0	&	0	&	0	&	1	\\[-7pt]
+	gammal		&	0	&	0	&	0	&	1	\\[-7pt]
+	barn			&	0	&	0	&	0	&	0	\\[-7pt]
+	ung			&	0	&	1	&	0	&	0	\\[-7pt]
+	barn			&	0	&	0	&	0	&	0	\\[-7pt]
+	gammal		&	0	&	0	&	0	&	1
+	\end{tabular}
+	
+\subsection{Ordinal eller nominal}
+
+Julia har rätt. Att vara ordinal eller nominal beror helt på vår underliggande mening med det data vi har samlat i tabellen. Även siffror kan användas där det inte finns någon egentlig inbördes rangordning. Ett bra exempel är siffrorna på tröjorna som basketspelare brukar ha på sig.
+
+\subsection{Streamlit}
+
+Är ett ramverk för att bygga Python-applikationer. Detta kan användas till att göra applikationen tillgänglig genom en server.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\newpage
+
+I denna rapport kommer tabeller att annoteras med \textbf{fet stil} kolumner med \emph{kursiv text}.
+
+\subsection{Databasen}
+
+Databasen, som presenterats i form av csv-filer är extraherade från en huvuddatabas under namnet AdventureWorks2022 och innehåller 6 tabeller som är hopkopplade i form av 3 grupper
+\begin{enumerate}
+	\item \textbf{DimProduct}, \textbf{FactInternetSale}, och \textbf{DimSalesTerritory}
+		\begin{itemize}
+			\item \textbf{FactInternetSale} som är kopplad till \textbf{DimSalesTerritory} genom \emph{SalesTerritoryKey}
+			\item \textbf{FactInternetSale} som är kopplad till \textbf{DimProduct} genom \emph{ProductKey}
+		\end{itemize}
+	\item \textbf{DimProductSubcategory} och \textbf{ProductCategory} genom \emph{ProductCategoryKey}
+	\item \textbf{DimDate} är en ensamstående tabell
+\end{enumerate}
+
+För att koppla ihop samtliga tabeller i en enda grupp, en så kallad data modell, söker vi och hittar \emph{ProductSubcategoryKey} som gemensamt nyckelord mellan \textbf{DimProduct} och \textbf{DimProductSubcategory}, samt \emph{DateKey} i \textbf{FactInternetSale} och \textbf{DimDate}. Resultatet ser ut som följer i bilden överst på nästa sida och påminner om den så kallade datamodellen snöflinga.
+
+\subsection{Rapporten}
+
+Rapporten är på begäran bestående av tre sidor, där den första sidan innehåller bolagets logotyp samt data i stora drag, den andra sidan innehåller intressanta trender som vi hittade i vår data, och den tredje sidan visar värdet av den totala försäljningen delad över olika regioner i världen.
+
+\subsubsection{Första sidan -- Introduction}
+
+Visar företagets logotyp och hur bolaget har presterat under hela sin historia
+
+\begin{itemize}
+	\item Den totala levererade beställningar Count of \emph{SalesAmount},
+	\item Deras totala värde Sum of \emph{SalesAmount},
+	\item Den mest sålda detaljprodukten Top Selling Category, som är en Measure i \textbf{FactInternetSale}. I detta fall är measure beräknad som den största utav de aggregerade värdena för alla enskilda, unika detaljprodukter i \emph{EnglishProductSubCategoryName}.
+	\item Den minst sålda detaljprodukten Least Selling Category, som också är en Measure i \textbf{FactInternetSale} och beräknad på samma sätt som ovan, där det minsta värdet är använt.
+	\item Därefter följer \emph{SalesAmount} för \emph{ShipDate}, \emph{DueDate}, och \emph{OrderDate}.
+\end{itemize}
+
+\subsubsection{Andra sidan -- Sales Trend}
+
+Vi har försökt titta på den cykliska trenden i data, nämligen hur de olika månaderna påverkar försäljningen i stort.
+
+\begin{itemize}
+	\item Överst på sidan presenteras den totala försäljningens värde under alla året bolaget har opererat.
+	\item Under denna, och på höger sidan ser vi en uppdelning av samma historik, en uppdelning av de tre huvudprodukterna, accessories, bikes och clothing.
+	\item Mittemot dessa kan man konstatera den cykliska försäljningen månadsvis. Detta visar att logiskt nog ökar försäljningen från januari fram till och med juni och därefter faller försäljningen tills den återigen ökar avsevärt under december månad, speciellt med tanke på julhandeln, då människor förbereder sig inför den stundande varma perioden.
+\end{itemize}
+
+\subsubsection{Tredje sidan -- Sales Amounts}
+
+Här visas den totala försäljningen per land, region, och kontinent i en interaktiv karta. För att överskådliggöra försäljningen för har även värden för de tre kontinenterna markerats som tre kort på topologiskt relevanta platser runtom kartan.
+
+\subsection{Övrigt}
+
+En mörkare färg har valts för hela rapporten för att undvika alltför mycket utstrålning av ljus som kan kännas besvärligt för ögat.\\\\\\\\\\\\\\
+
+
+
+
+
+
+
+
+
+
+
+\end{document}
